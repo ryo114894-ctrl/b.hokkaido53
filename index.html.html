@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>北海道五十三次 デジタル絵画アプリ プレミアム版</title>
+<style>
+  :root{
+    --bg1:#faf7f0;
+    --bg2:#f2efe9;
+    --panel:rgba(255,255,255,.78);
+    --panel-strong:#fffdf8;
+    --line:#e4dbce;
+    --text:#243040;
+    --muted:#6b7280;
+    --accent:#e35d44;
+    --accent2:#4b7f8c;
+    --accent3:#6b8f71;
+    --shadow:0 18px 50px rgba(34, 45, 58, .12);
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:"Yu Gothic","Hiragino Kaku Gothic ProN",system-ui,sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(circle at top left, rgba(122, 177, 186, .20), transparent 28%),
+      radial-gradient(circle at right top, rgba(229, 93, 68, .10), transparent 25%),
+      linear-gradient(135deg,var(--bg1),var(--bg2));
+    min-height:100vh;
+  }
+  header{
+    padding:20px 24px 16px;
+    position:sticky;
+    top:0;
+    z-index:20;
+    backdrop-filter:blur(16px);
+    background:rgba(250,247,240,.72);
+    border-bottom:1px solid rgba(228,219,206,.9);
+  }
+  .header-wrap{
+    max-width:1700px;
+    margin:auto;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  h1{
+    margin:0;
+    font-size:clamp(24px,3vw,34px);
+    letter-spacing:.03em;
+  }
+  .subtitle{
+    margin-top:5px;
+    color:#5f6773;
+    font-size:13px;
+  }
+  .hero-badges{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:8px 12px;
+    background:rgba(255,255,255,.8);
+    border:1px solid var(--line);
+    border-radius:999px;
+    box-shadow:0 8px 24px rgba(0,0,0,.05);
+    font-size:12px;
+    color:#415164;
+    font-weight:700;
+  }
+  main{
+    max-width:1700px;
+    margin:auto;
+    padding:18px;
+    display:grid;
+    grid-template-columns:360px 1fr;
+    gap:20px;
+  }
+  .panel{
+    background:var(--panel);
+    border:1px solid rgba(255,255,255,.72);
+    box-shadow:var(--shadow);
+    border-radius:var(--radius);
+    backdrop-filter:blur(14px);
+  }
+  .toolbar{
+    padding:16px;
+    height:fit-content;
+    position:sticky;
+    top:96px;
+  }
+  .section{
+    background:rgba(255,255,255,.62);
+    border:1px solid rgba(228,219,206,.85);
+    border-radius:18px;
+    padding:14px;
+    margin-bottom:12px;
+  }
+  .section:last-child{margin-bottom:0}
+  .section h2{
+    margin:0 0 10px;
+    font-size:13px;
+    color:#5a4e43;
+    letter-spacing:.08em;
+  }
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  button, select, input[type="range"], input[type="text"]{
+    width:100%;
+  }
+  select, input[type="text"]{
+    border:1px solid var(--line);
+    background:#fff;
+    color:#2c3440;
+    padding:10px 12px;
+    border-radius:14px;
+    font-size:14px;
+    outline:none;
+  }
+  input[type="text"]:focus, select:focus{
+    border-color:#9dc3ca;
+    box-shadow:0 0 0 4px rgba(75,127,140,.12);
+  }
+  button{
+    border:1px solid var(--line);
+    background:linear-gradient(180deg,#ffffff,#f8f6f1);
+    color:#2f3946;
+    padding:10px 12px;
+    border-radius:14px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    transition:.18s ease;
+    box-shadow:0 8px 18px rgba(0,0,0,.04);
+  }
+  button:hover{
+    transform:translateY(-1px);
+    box-shadow:0 10px 22px rgba(0,0,0,.07);
+  }
+  button.active{
+    background:linear-gradient(180deg,#587f8b,#426973);
+    border-color:#426973;
+    color:#fff;
+  }
+  button.mode-active{
+    background:linear-gradient(180deg,#6b8f71,#55745a);
+    border-color:#55745a;
+    color:#fff;
+  }
+  button.stamp-active{
+    background:linear-gradient(180deg,#916e49,#7c5b38);
+    border-color:#7c5b38;
+    color:#fff;
+  }
+  button.danger{
+    background:linear-gradient(180deg,#fff2ef,#ffe8e3);
+    color:#b63f31;
+  }
+  button.primary{
+    background:linear-gradient(180deg,#ee7d64,#da5d45);
+    border-color:#da5d45;
+    color:#fff;
+  }
+  button.secondary{
+    background:linear-gradient(180deg,#7eaab5,#5f8e99);
+    border-color:#5f8e99;
+    color:#fff;
+  }
+  .row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .row label{
+    min-width:72px;
+    font-size:12px;
+    color:#5f6773;
+    font-weight:700;
+  }
+  .value{
+    min-width:42px;
+    text-align:right;
+    font-size:12px;
+    color:#5f6773;
+    font-weight:700;
+  }
+  .palette{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:8px;
+  }
+  .swatch{
+    aspect-ratio:1;
+    border-radius:50%;
+    border:2px solid #fff;
+    outline:1px solid rgba(0,0,0,.18);
+    cursor:pointer;
+  }
+  .swatch.active{
+    outline:3px solid #222;
+  }
+  .tiny-note{
+    margin-top:8px;
+    font-size:11px;
+    line-height:1.55;
+    color:#6a6f78;
+  }
+  .status{
+    margin-top:8px;
+    font-size:12px;
+    line-height:1.5;
+    color:#5f6773;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:9px 10px;
+  }
+  .canvas-panel{
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    min-height:calc(100vh - 120px);
+  }
+  .canvas-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:14px;
+    flex-wrap:wrap;
+    margin-bottom:12px;
+  }
+  .title-area{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .title-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .meta-chip{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:7px 11px;
+    border-radius:999px;
+    background:linear-gradient(180deg,#fff,#f7f4ee);
+    border:1px solid var(--line);
+    font-size:12px;
+    color:#576272;
+    font-weight:800;
+  }
+  .stage-shell{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:12px;
+    border-radius:20px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,.46)),
+      radial-gradient(circle at top, rgba(75,127,140,.08), transparent 35%);
+    border:1px solid rgba(255,255,255,.75);
+  }
+  #stage{
+    position:relative;
+    width:min(100%,1120px);
+    aspect-ratio:16 / 9;
+    border:12px solid #5c4b3e;
+    border-radius:10px;
+    background:#efe5cf;
+    box-shadow:
+      0 22px 60px rgba(0,0,0,.16),
+      inset 0 0 0 1px rgba(255,255,255,.28);
+    overflow:hidden;
+  }
+  canvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
+    touch-action:none;
+  }
+  #paper{z-index:0}
+  #paint{z-index:1}
+  .tips{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+  }
+  .tip{
+    background:rgba(255,255,255,.7);
+    border:1px solid rgba(228,219,206,.9);
+    border-radius:16px;
+    padding:12px;
+    font-size:12px;
+    line-height:1.6;
+  }
+  .tip b{color:#4d6577}
+  input[type="file"]{
+    width:100%;
+    background:#fff;
+    border:1px dashed var(--line);
+    border-radius:14px;
+    padding:10px;
+    font-size:12px;
+  }
+  .toolbar-footer{
+    margin-top:12px;
+    background:linear-gradient(135deg, rgba(227,93,68,.10), rgba(75,127,140,.10));
+    border:1px solid rgba(227,93,68,.12);
+    border-radius:16px;
+    padding:12px;
+    font-size:12px;
+    line-height:1.6;
+    color:#55606f;
+  }
+  @media (max-width: 980px){
+    main{grid-template-columns:1fr}
+    .toolbar{position:static}
+    .tips{grid-template-columns:1fr}
+    #stage{width:min(100%,900px)}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-wrap">
+    <div>
+      <h1>北海道五十三次 デジタル絵画アプリ</h1>
+      <div class="subtitle">浮世絵風スタンプ・落款・下絵調整・サイズ切替に対応した、授業向けプレミアム版</div>
+    </div>
+    <div class="hero-badges">
+      <span class="badge">🎨 おしゃれUI</span>
+      <span class="badge">🖼 下絵を移動・拡大縮小</span>
+      <span class="badge">🧧 赤い落款</span>
+      <span class="badge">📐 16:9 / 9:16 / A4</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <aside class="panel toolbar">
+    <div class="section">
+      <h2>キャンバスサイズ</h2>
+      <select id="sizePreset">
+        <option value="16:9">横長 16:9（通常スライド向け）</option>
+        <option value="9:16">縦長 9:16（縦作品向け）</option>
+        <option value="1:1.414">A4縦（印刷・配布向け）</option>
+        <option value="1.414:1">A4横（印刷・配布向け）</option>
+      </select>
+      <div class="grid2" style="margin-top:8px;">
+        <button id="applySizeBtn" class="secondary">サイズを適用</button>
+        <button id="fitViewBtn">画面に合わせる</button>
+      </div>
+      <div class="tiny-note">PowerPointや印刷用途に合わせてサイズを切り替えられます。</div>
+    </div>
+
+    <div class="section">
+      <h2>描画ツール</h2>
+      <div class="grid2">
+        <button id="brushBtn" class="active">✍ 筆</button>
+        <button id="eraserBtn">⌫ 消しゴム</button>
+        <button id="lineBtn">／ 直線</button>
+        <button id="rectBtn">□ 四角</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>筆の設定</h2>
+      <div class="row">
+        <label>太さ</label>
+        <input id="brushSize" type="range" min="1" max="60" value="8" />
+        <span id="brushSizeVal" class="value">8</span>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <label>透明度</label>
+        <input id="brushOpacity" type="range" min="10" max="100" value="100" />
+        <span id="brushOpacityVal" class="value">100</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>和風カラーパレット</h2>
+      <div class="palette" id="palette"></div>
+      <div class="row" style="margin-top:10px;">
+        <label>自由色</label>
+        <input id="colorPicker" type="color" value="#223a5e" style="height:40px;border:none;background:transparent;">
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>浮世絵風スタンプ</h2>
+      <div class="grid2">
+        <button class="stampBtn" data-stamp="snow">❄ 雪</button>
+        <button class="stampBtn" data-stamp="cloud">☁ 雲</button>
+        <button class="stampBtn" data-stamp="wave">〰 波</button>
+        <button class="stampBtn" data-stamp="pine">🌲 松</button>
+        <button class="stampBtn" data-stamp="torii">⛩ 鳥居</button>
+        <button id="cancelStampBtn">スタンプ解除</button>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <label>大きさ</label>
+        <input id="stampScale" type="range" min="30" max="280" value="100" />
+        <span id="stampScaleVal" class="value">100</span>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>下絵・参考写真</h2>
+      <input id="imageLoader" type="file" accept="image/*" />
+      <div class="grid2" style="margin-top:8px;">
+        <button id="toggleRefBtn">下絵を隠す</button>
+        <button id="removeRefBtn">参考画像を消す</button>
+      </div>
+      <div class="grid2" style="margin-top:8px;">
+        <button id="refMoveBtn">下絵調整モード</button>
+        <button id="refResetBtn">位置リセット</button>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <label>濃度</label>
+        <input id="refOpacity" type="range" min="0" max="100" value="30" />
+        <span id="refOpacityVal" class="value">30</span>
+      </div>
+      <div class="row" style="margin-top:8px;">
+        <label>拡大率</label>
+        <input id="refScale" type="range" min="20" max="250" value="100" />
+        <span id="refScaleVal" class="value">100%</span>
+      </div>
+      <div class="grid3" style="margin-top:8px;">
+        <button id="refZoomOutBtn">− 縮小</button>
+        <button id="refCenterBtn">中央へ</button>
+        <button id="refZoomInBtn">＋ 拡大</button>
+      </div>
+      <div id="refStatus" class="status">参考画像は未読み込みです。</div>
+      <div class="tiny-note">「下絵調整モード」をONにすると、キャンバス上で下絵をドラッグして移動できます。</div>
+    </div>
+
+    <div class="section">
+      <h2>赤い落款</h2>
+      <input id="sealText" type="text" maxlength="4" placeholder="例：北海" value="北海" />
+      <div class="grid2" style="margin-top:8px;">
+        <button id="sealAutoBtn" class="primary">右下に自動配置</button>
+        <button id="sealCenterBtn">中央に試し押し</button>
+      </div>
+      <div class="tiny-note">未入力なら作者名の先頭文字を使います。浮世絵らしい赤い印を追加できます。</div>
+    </div>
+
+    <div class="section">
+      <h2>操作</h2>
+      <div class="grid2">
+        <button id="undoBtn">↶ 戻す</button>
+        <button id="redoBtn">↷ やり直し</button>
+        <button id="clearBtn" class="danger">🧹 全消去</button>
+        <button id="gridBtn">方眼 OFF</button>
+      </div>
+      <div class="tiny-note">全消去は、描いた線・スタンプ・落款だけを消します。下絵は残ります。</div>
+    </div>
+
+    <div class="section">
+      <h2>保存</h2>
+      <button id="saveBtn" class="primary">PNG画像として保存</button>
+    </div>
+
+    <div class="toolbar-footer">
+      <b>おすすめの使い方</b><br>
+      ①参考写真を読み込む → ②下絵を調整 → ③筆やスタンプで浮世絵化 → ④落款を押す → ⑤PNG保存
+    </div>
+  </aside>
+
+  <section class="panel canvas-panel">
+    <div class="canvas-head">
+      <div class="title-area">
+        <div class="meta-chip">作品タイトル</div>
+        <div class="title-row">
+          <input id="workTitle" type="text" value="札幌　雪之時計台" />
+          <input id="author" type="text" value="作者名" />
+        </div>
+      </div>
+      <div class="title-area">
+        <div class="meta-chip" id="modeChip">現在のモード：筆</div>
+        <div class="meta-chip" id="canvasChip">キャンバス：16:9</div>
+      </div>
+    </div>
+
+    <div class="stage-shell">
+      <div id="stage">
+        <canvas id="paper"></canvas>
+        <canvas id="paint"></canvas>
+      </div>
+    </div>
+
+    <div class="tips">
+      <div class="tip"><b>広重POINT ①</b><br>手前を大きく、奥を小さくすると、浮世絵らしい奥行きが出ます。</div>
+      <div class="tip"><b>広重POINT ②</b><br>天気や季節を入れると、同じ場所でも作品の雰囲気が大きく変わります。</div>
+      <div class="tip"><b>広重POINT ③</b><br>最後に右下へ落款を入れると、作品が一気に“完成形”らしくなります。</div>
+    </div>
+  </section>
+</main>
+
+<script>
+const stage = document.getElementById('stage');
+const paperCanvas = document.getElementById('paper');
+const paintCanvas = document.getElementById('paint');
+const pctx = paperCanvas.getContext('2d');
+const ctx = paintCanvas.getContext('2d');
+
+const brushBtn = document.getElementById('brushBtn');
+const eraserBtn = document.getElementById('eraserBtn');
+const lineBtn = document.getElementById('lineBtn');
+const rectBtn = document.getElementById('rectBtn');
+const stampButtons = Array.from(document.querySelectorAll('.stampBtn'));
+
+const brushSize = document.getElementById('brushSize');
+const brushOpacity = document.getElementById('brushOpacity');
+const colorPicker = document.getElementById('colorPicker');
+
+const sizePreset = document.getElementById('sizePreset');
+const canvasChip = document.getElementById('canvasChip');
+const modeChip = document.getElementById('modeChip');
+
+const refStatus = document.getElementById('refStatus');
+const toggleRefBtn = document.getElementById('toggleRefBtn');
+const refMoveBtn = document.getElementById('refMoveBtn');
+const refScaleInput = document.getElementById('refScale');
+
+let tool = 'brush';
+let currentStamp = null;
+
+let brushSizeValue = 8;
+let brushOpacityValue = 1;
+let color = '#223a5e';
+let gridOn = false;
+
+let isDrawing = false;
+let startX = 0, startY = 0, lastX = 0, lastY = 0;
+
+let refImage = null;
+let refVisible = true;
+let refOpacityValue = 0.30;
+let refScaleValue = 1;
+let refOffsetX = 0;
+let refOffsetY = 0;
+let refAdjustMode = false;
+let isDraggingRef = false;
+let refDragStartX = 0;
+let refDragStartY = 0;
+let refStartOffsetX = 0;
+let refStartOffsetY = 0;
+
+let undoStack = [];
+let redoStack = [];
+
+let stampScaleValue = 100;
+
+const colors = [
+  '#223a5e','#2f5061','#466b73','#6b8f71',
+  '#a88d50','#d38a34','#d15d45','#8d3d3d',
+  '#684b3d','#8a7861','#cabda8','#f3ebdd'
+];
+
+function cssWidth(){ return stage.clientWidth; }
+function cssHeight(){ return stage.clientHeight; }
+function getDpr(){ return Math.max(1, window.devicePixelRatio || 1); }
+
+function configureCanvas(canvas, context){
+  const w = cssWidth();
+  const h = cssHeight();
+  const ratio = getDpr();
+  canvas.width = Math.round(w * ratio);
+  canvas.height = Math.round(h * ratio);
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  context.setTransform(ratio, 0, 0, ratio, 0, 0);
+  context.imageSmoothingEnabled = true;
+}
+
+function resetAndClearPhysical(context, canvas){
+  context.save();
+  context.setTransform(1, 0, 0, 1, 0, 0);
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  context.restore();
+}
+
+function clearPaintCanvasReliable(){
+  resetAndClearPhysical(ctx, paintCanvas);
+  ctx.setTransform(getDpr(), 0, 0, getDpr(), 0, 0);
+  ctx.imageSmoothingEnabled = true;
+}
+
+function fitStageByPreset(){
+  const preset = sizePreset.value;
+  const [a, b] = preset.split(':').map(Number);
+  stage.style.aspectRatio = `${a} / ${b}`;
+  if (preset === '9:16' || preset === '1:1.414'){
+    stage.style.width = 'min(100%, 760px)';
+  } else {
+    stage.style.width = 'min(100%, 1120px)';
+  }
+  canvasChip.textContent = 'キャンバス：' + preset;
+}
+
+function resizeCanvasesPreservingPaint(){
+  const previous = document.createElement('canvas');
+  previous.width = paintCanvas.width;
+  previous.height = paintCanvas.height;
+  previous.getContext('2d').drawImage(paintCanvas, 0, 0);
+
+  configureCanvas(paperCanvas, pctx);
+  configureCanvas(paintCanvas, ctx);
+  drawPaper();
+
+  if(previous.width > 0 && previous.height > 0){
+    const img = new Image();
+    img.onload = () => {
+      clearPaintCanvasReliable();
+      ctx.drawImage(img, 0, 0, cssWidth(), cssHeight());
+    };
+    img.src = previous.toDataURL('image/png');
+  }
+}
+
+function applyCanvasSize(){
+  fitStageByPreset();
+  setTimeout(resizeCanvasesPreservingPaint, 40);
+}
+
+function setModeLabel(text){
+  modeChip.textContent = '現在のモード：' + text;
+}
+
+function drawPaper(){
+  const w = cssWidth();
+  const h = cssHeight();
+  pctx.clearRect(0, 0, w, h);
+
+  // 和紙背景
+  pctx.fillStyle = '#efe5cf';
+  pctx.fillRect(0, 0, w, h);
+
+  pctx.save();
+  pctx.globalAlpha = 0.16;
+  for(let i=0;i<600;i++){
+    const x = Math.random() * w;
+    const y = Math.random() * h;
+    const s = Math.random() * 1.25 + 0.25;
+    pctx.fillStyle = Math.random() > 0.5 ? '#ffffff' : '#c1b193';
+    pctx.fillRect(x, y, s, s);
+  }
+  pctx.restore();
+
+  // 薄いグラデーション
+  const grad = pctx.createLinearGradient(0, 0, w, h);
+  grad.addColorStop(0, 'rgba(255,255,255,0.18)');
+  grad.addColorStop(1, 'rgba(215,198,168,0.12)');
+  pctx.fillStyle = grad;
+  pctx.fillRect(0, 0, w, h);
+
+  if(refImage && refVisible){
+    pctx.save();
+    pctx.globalAlpha = refOpacityValue;
+
+    const fit = Math.min(w / refImage.width, h / refImage.height);
+    const ratio = fit * refScaleValue;
+    const rw = refImage.width * ratio;
+    const rh = refImage.height * ratio;
+    const x = (w - rw) / 2 + refOffsetX;
+    const y = (h - rh) / 2 + refOffsetY;
+
+    pctx.drawImage(refImage, x, y, rw, rh);
+
+    if(refAdjustMode){
+      pctx.setLineDash([8,6]);
+      pctx.lineWidth = 2;
+      pctx.strokeStyle = 'rgba(51, 105, 117, 0.85)';
+      pctx.strokeRect(x, y, rw, rh);
+      pctx.setLineDash([]);
+      pctx.fillStyle = 'rgba(51, 105, 117, 0.85)';
+      pctx.fillRect(x + rw - 10, y + rh - 10, 10, 10);
+    }
+    pctx.restore();
+  }
+
+  if(gridOn){
+    pctx.save();
+    pctx.strokeStyle = 'rgba(70,70,70,.16)';
+    pctx.lineWidth = 1;
+    const step = 50;
+    for(let x=0;x<w;x+=step){
+      pctx.beginPath();
+      pctx.moveTo(x,0);
+      pctx.lineTo(x,h);
+      pctx.stroke();
+    }
+    for(let y=0;y<h;y+=step){
+      pctx.beginPath();
+      pctx.moveTo(0,y);
+      pctx.lineTo(w,y);
+      pctx.stroke();
+    }
+    pctx.restore();
+  }
+}
+
+function clearToolButtonStates(){
+  [brushBtn, eraserBtn, lineBtn, rectBtn].forEach(btn => btn.classList.remove('active'));
+  stampButtons.forEach(btn => btn.classList.remove('stamp-active'));
+  refMoveBtn.classList.remove('mode-active');
+}
+
+function setTool(name){
+  tool = name;
+  currentStamp = null;
+  refAdjustMode = false;
+  clearToolButtonStates();
+  if(name === 'brush'){ brushBtn.classList.add('active'); setModeLabel('筆'); }
+  if(name === 'eraser'){ eraserBtn.classList.add('active'); setModeLabel('消しゴム'); }
+  if(name === 'line'){ lineBtn.classList.add('active'); setModeLabel('直線'); }
+  if(name === 'rect'){ rectBtn.classList.add('active'); setModeLabel('四角'); }
+  drawPaper();
+}
+
+function setStamp(name){
+  tool = 'stamp';
+  currentStamp = name;
+  refAdjustMode = false;
+  clearToolButtonStates();
+  stampButtons.forEach(btn => {
+    if(btn.dataset.stamp === name) btn.classList.add('stamp-active');
+  });
+  const names = {snow:'雪スタンプ', cloud:'雲スタンプ', wave:'波スタンプ', pine:'松スタンプ', torii:'鳥居スタンプ'};
+  setModeLabel(names[name] || 'スタンプ');
+  drawPaper();
+}
+
+function toggleRefAdjustMode(){
+  if(!refImage){
+    refStatus.textContent = '先に参考画像を読み込んでください。';
+    return;
+  }
+  refAdjustMode = !refAdjustMode;
+  currentStamp = null;
+  tool = refAdjustMode ? 'refmove' : 'brush';
+  clearToolButtonStates();
+  if(refAdjustMode){
+    refMoveBtn.classList.add('mode-active');
+    setModeLabel('下絵調整');
+  }else{
+    brushBtn.classList.add('active');
+    setModeLabel('筆');
+  }
+  drawPaper();
+}
+
+function getPos(event){
+  const rect = paintCanvas.getBoundingClientRect();
+  return {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top
+  };
+}
+
+function pushUndo(){
+  undoStack.push(paintCanvas.toDataURL('image/png'));
+  if(undoStack.length > 40) undoStack.shift();
+  redoStack = [];
+}
+
+function restoreFromDataUrl(dataUrl){
+  const img = new Image();
+  img.onload = () => {
+    clearPaintCanvasReliable();
+    ctx.drawImage(img, 0, 0, cssWidth(), cssHeight());
+  };
+  img.src = dataUrl;
+}
+
+function drawDot(x, y, isErase=false){
+  ctx.save();
+  if(isErase){
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(1, brushSizeValue / 2 + 0.8), 0, Math.PI * 2);
+    ctx.fill();
+  }else{
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = brushOpacityValue;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, Math.max(0.8, brushSizeValue / 2), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+function drawSegment(x1, y1, x2, y2, isErase=false){
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = brushSizeValue;
+  if(isErase){
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = 'rgba(0,0,0,1)';
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x2, y2, Math.max(1, brushSizeValue / 2 + 0.8), 0, Math.PI * 2);
+    ctx.fill();
+  }else{
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = brushOpacityValue;
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function beginPointer(event){
+  if(event.button !== undefined && event.button !== 0) return;
+  event.preventDefault();
+  const p = getPos(event);
+
+  if(refAdjustMode && refImage){
+    isDraggingRef = true;
+    refDragStartX = p.x;
+    refDragStartY = p.y;
+    refStartOffsetX = refOffsetX;
+    refStartOffsetY = refOffsetY;
+    paintCanvas.setPointerCapture?.(event.pointerId);
+    return;
+  }
+
+  if(tool === 'stamp' && currentStamp){
+    pushUndo();
+    drawStamp(currentStamp, p.x, p.y, stampScaleValue);
+    return;
+  }
+
+  isDrawing = true;
+  startX = lastX = p.x;
+  startY = lastY = p.y;
+  pushUndo();
+  paintCanvas.setPointerCapture?.(event.pointerId);
+
+  if(tool === 'brush'){
+    drawDot(p.x, p.y, false);
+  }else if(tool === 'eraser'){
+    drawDot(p.x, p.y, true);
+  }
+}
+
+function movePointer(event){
+  const p = getPos(event);
+
+  if(isDraggingRef && refAdjustMode && refImage){
+    event.preventDefault();
+    refOffsetX = refStartOffsetX + (p.x - refDragStartX);
+    refOffsetY = refStartOffsetY + (p.y - refDragStartY);
+    drawPaper();
+    return;
+  }
+
+  if(!isDrawing) return;
+  event.preventDefault();
+
+  if(tool === 'brush'){
+    drawSegment(lastX, lastY, p.x, p.y, false);
+    lastX = p.x;
+    lastY = p.y;
+  }else if(tool === 'eraser'){
+    drawSegment(lastX, lastY, p.x, p.y, true);
+    lastX = p.x;
+    lastY = p.y;
+  }
+}
+
+function endPointer(event){
+  const p = getPos(event);
+
+  if(isDraggingRef){
+    isDraggingRef = false;
+    paintCanvas.releasePointerCapture?.(event.pointerId);
+    return;
+  }
+
+  if(!isDrawing) return;
+  event.preventDefault();
+
+  if(tool === 'line' || tool === 'rect'){
+    ctx.save();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = brushOpacityValue;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = brushSizeValue;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    if(tool === 'line'){
+      ctx.beginPath();
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+    }else{
+      ctx.strokeRect(startX, startY, p.x - startX, p.y - startY);
+    }
+    ctx.restore();
+  }
+
+  isDrawing = false;
+  paintCanvas.releasePointerCapture?.(event.pointerId);
+}
+
+function drawSnowflake(cx, cy, r){
+  for(let a=0; a<6; a++){
+    const ang = (Math.PI / 3) * a;
+    const x1 = cx + Math.cos(ang) * r;
+    const y1 = cy + Math.sin(ang) * r;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(x1, y1);
+    ctx.stroke();
+
+    const bx = cx + Math.cos(ang) * r * 0.58;
+    const by = cy + Math.sin(ang) * r * 0.58;
+    const arm1 = ang + Math.PI / 6;
+    const arm2 = ang - Math.PI / 6;
+    ctx.beginPath();
+    ctx.moveTo(bx, by);
+    ctx.lineTo(bx + Math.cos(arm1) * r * 0.20, by + Math.sin(arm1) * r * 0.20);
+    ctx.moveTo(bx, by);
+    ctx.lineTo(bx + Math.cos(arm2) * r * 0.20, by + Math.sin(arm2) * r * 0.20);
+    ctx.stroke();
+  }
+}
+
+function drawStamp(type, x, y, scale){
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = brushOpacityValue;
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  const s = scale;
+
+  if(type === 'snow'){
+    ctx.lineWidth = Math.max(1.5, s * 0.04);
+    for(let i=0;i<7;i++){
+      const fx = x + (Math.random() - 0.5) * s * 0.9;
+      const fy = y + (Math.random() - 0.5) * s * 0.9;
+      const r = s * (0.08 + Math.random() * 0.07);
+      drawSnowflake(fx, fy, r);
+    }
+  }
+
+  if(type === 'cloud'){
+    ctx.lineWidth = Math.max(2, s * 0.03);
+    ctx.beginPath();
+    ctx.moveTo(x - s*0.42, y + s*0.08);
+    ctx.bezierCurveTo(x - s*0.50, y - s*0.10, x - s*0.24, y - s*0.22, x - s*0.12, y - s*0.11);
+    ctx.bezierCurveTo(x - s*0.03, y - s*0.30, x + s*0.18, y - s*0.28, x + s*0.21, y - s*0.12);
+    ctx.bezierCurveTo(x + s*0.38, y - s*0.18, x + s*0.54, y - s*0.03, x + s*0.44, y + s*0.10);
+    ctx.bezierCurveTo(x + s*0.25, y + s*0.18, x - s*0.10, y + s*0.22, x - s*0.42, y + s*0.08);
+    ctx.stroke();
+  }
+
+  if(type === 'wave'){
+    ctx.lineWidth = Math.max(2, s * 0.03);
+    for(let row=0; row<3; row++){
+      const yy = y + (row - 1) * s * 0.13;
+      for(let i=0;i<4;i++){
+        const sx = x - s*0.45 + i*s*0.28;
+        ctx.beginPath();
+        ctx.moveTo(sx, yy);
+        ctx.bezierCurveTo(sx + s*0.07, yy - s*0.10, sx + s*0.16, yy - s*0.10, sx + s*0.24, yy);
+        ctx.stroke();
+      }
+    }
+    ctx.beginPath();
+    ctx.moveTo(x - s*0.48, y + s*0.18);
+    ctx.bezierCurveTo(x - s*0.30, y + s*0.06, x - s*0.12, y + s*0.10, x, y + s*0.18);
+    ctx.bezierCurveTo(x + s*0.16, y + s*0.28, x + s*0.32, y + s*0.10, x + s*0.48, y + s*0.18);
+    ctx.stroke();
+  }
+
+  if(type === 'pine'){
+    ctx.lineWidth = Math.max(2, s * 0.036);
+    ctx.beginPath();
+    ctx.moveTo(x, y + s*0.36);
+    ctx.lineTo(x, y - s*0.34);
+    ctx.stroke();
+
+    for(let i=0;i<4;i++){
+      const yy = y - s*0.20 + i*s*0.16;
+      const spread = s*(0.34 - i*0.05);
+      ctx.beginPath();
+      ctx.moveTo(x, yy);
+      ctx.lineTo(x - spread, yy + s*0.06);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(x, yy);
+      ctx.lineTo(x + spread, yy + s*0.06);
+      ctx.stroke();
+    }
+  }
+
+  if(type === 'torii'){
+    ctx.lineWidth = Math.max(3, s * 0.05);
+    ctx.strokeStyle = '#b72222';
+    ctx.beginPath();
+    ctx.moveTo(x - s*0.34, y - s*0.18);
+    ctx.lineTo(x + s*0.34, y - s*0.18);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(x - s*0.28, y - s*0.30);
+    ctx.lineTo(x + s*0.28, y - s*0.30);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(x - s*0.24, y - s*0.18);
+    ctx.lineTo(x - s*0.18, y + s*0.30);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(x + s*0.24, y - s*0.18);
+    ctx.lineTo(x + s*0.18, y + s*0.30);
+    ctx.stroke();
+
+    ctx.lineWidth = Math.max(2, s * 0.03);
+    ctx.beginPath();
+    ctx.moveTo(x - s*0.14, y + s*0.02);
+    ctx.lineTo(x + s*0.14, y + s*0.02);
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function getSealText(){
+  const manual = document.getElementById('sealText').value.trim();
+  if(manual) return manual.slice(0, 4);
+  const author = document.getElementById('author').value.trim().replace(/\s/g, '');
+  return author ? author.slice(0, 2) : '北海';
+}
+
+function drawSeal(x, y, side){
+  pushUndo();
+  const text = getSealText();
+  const chars = Array.from(text);
+
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.globalAlpha = .95;
+  ctx.strokeStyle = '#c42020';
+  ctx.fillStyle = '#c42020';
+  ctx.lineWidth = Math.max(2, side * 0.05);
+  ctx.strokeRect(x, y, side, side);
+
+  ctx.font = `bold ${side * 0.24}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  if(chars.length <= 2){
+    chars.forEach((ch, i) => {
+      const yy = y + side * (0.33 + i * 0.28);
+      ctx.fillText(ch, x + side / 2, yy);
+    });
+  } else {
+    const half = Math.ceil(chars.length / 2);
+    const col1 = chars.slice(0, half);
+    const col2 = chars.slice(half);
+    col1.forEach((ch, i) => {
+      const yy = y + side * (0.25 + i * 0.22);
+      ctx.fillText(ch, x + side * 0.38, yy);
+    });
+    col2.forEach((ch, i) => {
+      const yy = y + side * (0.25 + i * 0.22);
+      ctx.fillText(ch, x + side * 0.68, yy);
+    });
+  }
+
+  ctx.restore();
+}
+
+brushBtn.onclick = () => setTool('brush');
+eraserBtn.onclick = () => setTool('eraser');
+lineBtn.onclick = () => setTool('line');
+rectBtn.onclick = () => setTool('rect');
+stampButtons.forEach(btn => btn.onclick = () => setStamp(btn.dataset.stamp));
+document.getElementById('cancelStampBtn').onclick = () => setTool('brush');
+
+document.getElementById('brushSize').oninput = (e) => {
+  brushSizeValue = Number(e.target.value);
+  document.getElementById('brushSizeVal').textContent = e.target.value;
+};
+
+document.getElementById('brushOpacity').oninput = (e) => {
+  brushOpacityValue = Number(e.target.value) / 100;
+  document.getElementById('brushOpacityVal').textContent = e.target.value;
+};
+
+document.getElementById('stampScale').oninput = (e) => {
+  stampScaleValue = Number(e.target.value);
+  document.getElementById('stampScaleVal').textContent = e.target.value;
+};
+
+colorPicker.oninput = () => {
+  color = colorPicker.value;
+  document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+};
+
+const palette = document.getElementById('palette');
+colors.forEach((c, i) => {
+  const sw = document.createElement('button');
+  sw.className = 'swatch' + (i === 0 ? ' active' : '');
+  sw.style.background = c;
+  sw.title = c;
+  sw.onclick = () => {
+    color = c;
+    colorPicker.value = c;
+    document.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+    sw.classList.add('active');
+  };
+  palette.appendChild(sw);
+});
+
+document.getElementById('applySizeBtn').onclick = applyCanvasSize;
+document.getElementById('fitViewBtn').onclick = () => window.scrollTo({top: 0, behavior: 'smooth'});
+
+document.getElementById('undoBtn').onclick = () => {
+  if(!undoStack.length) return;
+  redoStack.push(paintCanvas.toDataURL('image/png'));
+  restoreFromDataUrl(undoStack.pop());
+};
+
+document.getElementById('redoBtn').onclick = () => {
+  if(!redoStack.length) return;
+  undoStack.push(paintCanvas.toDataURL('image/png'));
+  restoreFromDataUrl(redoStack.pop());
+};
+
+document.getElementById('clearBtn').onclick = () => {
+  pushUndo();
+  clearPaintCanvasReliable();
+};
+
+document.getElementById('gridBtn').onclick = (e) => {
+  gridOn = !gridOn;
+  e.target.textContent = '方眼 ' + (gridOn ? 'ON' : 'OFF');
+  drawPaper();
+};
+
+document.getElementById('imageLoader').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+
+  if(!file.type.startsWith('image/')){
+    refStatus.textContent = '画像ファイルを選択してください。';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const img = new Image();
+    img.onload = () => {
+      refImage = img;
+      refVisible = true;
+      refScaleValue = 1;
+      refOffsetX = 0;
+      refOffsetY = 0;
+      refScaleInput.value = 100;
+      document.getElementById('refScaleVal').textContent = '100%';
+      toggleRefBtn.textContent = '下絵を隠す';
+      refStatus.textContent = `読み込み完了：${file.name}`;
+      drawPaper();
+    };
+    img.onerror = () => refStatus.textContent = '画像の読み込みに失敗しました。';
+    img.src = ev.target.result;
+  };
+  reader.onerror = () => refStatus.textContent = 'ファイルの読み込みに失敗しました。';
+  reader.readAsDataURL(file);
+});
+
+document.getElementById('refOpacity').oninput = (e) => {
+  refOpacityValue = Number(e.target.value) / 100;
+  document.getElementById('refOpacityVal').textContent = e.target.value;
+  drawPaper();
+};
+
+toggleRefBtn.onclick = () => {
+  if(!refImage){
+    refStatus.textContent = '先に参考画像を読み込んでください。';
+    return;
+  }
+  refVisible = !refVisible;
+  toggleRefBtn.textContent = refVisible ? '下絵を隠す' : '下絵を表示';
+  drawPaper();
+};
+
+document.getElementById('removeRefBtn').onclick = () => {
+  refImage = null;
+  refVisible = true;
+  refAdjustMode = false;
+  refOffsetX = 0;
+  refOffsetY = 0;
+  refScaleValue = 1;
+  refScaleInput.value = 100;
+  document.getElementById('refScaleVal').textContent = '100%';
+  document.getElementById('imageLoader').value = '';
+  refStatus.textContent = '参考画像は未読み込みです。';
+  clearToolButtonStates();
+  brushBtn.classList.add('active');
+  setModeLabel('筆');
+  drawPaper();
+};
+
+refMoveBtn.onclick = () => toggleRefAdjustMode();
+
+document.getElementById('refResetBtn').onclick = () => {
+  refOffsetX = 0;
+  refOffsetY = 0;
+  refScaleValue = 1;
+  refScaleInput.value = 100;
+  document.getElementById('refScaleVal').textContent = '100%';
+  drawPaper();
+};
+
+document.getElementById('refCenterBtn').onclick = () => {
+  refOffsetX = 0;
+  refOffsetY = 0;
+  drawPaper();
+};
+
+document.getElementById('refZoomInBtn').onclick = () => {
+  let v = Math.min(250, Number(refScaleInput.value) + 10);
+  refScaleInput.value = v;
+  refScaleValue = v / 100;
+  document.getElementById('refScaleVal').textContent = v + '%';
+  drawPaper();
+};
+
+document.getElementById('refZoomOutBtn').onclick = () => {
+  let v = Math.max(20, Number(refScaleInput.value) - 10);
+  refScaleInput.value = v;
+  refScaleValue = v / 100;
+  document.getElementById('refScaleVal').textContent = v + '%';
+  drawPaper();
+};
+
+refScaleInput.oninput = (e) => {
+  refScaleValue = Number(e.target.value) / 100;
+  document.getElementById('refScaleVal').textContent = e.target.value + '%';
+  drawPaper();
+};
+
+document.getElementById('sealAutoBtn').onclick = () => {
+  const side = Math.min(cssWidth(), cssHeight()) * 0.12;
+  const x = cssWidth() - side - 24;
+  const y = cssHeight() - side - 24;
+  drawSeal(x, y, side);
+};
+
+document.getElementById('sealCenterBtn').onclick = () => {
+  const side = Math.min(cssWidth(), cssHeight()) * 0.14;
+  const x = cssWidth() / 2 - side / 2;
+  const y = cssHeight() / 2 - side / 2;
+  drawSeal(x, y, side);
+};
+
+document.getElementById('saveBtn').onclick = () => {
+  const out = document.createElement('canvas');
+  out.width = paintCanvas.width;
+  out.height = paintCanvas.height;
+  const o = out.getContext('2d');
+
+  o.drawImage(paperCanvas, 0, 0);
+  o.drawImage(paintCanvas, 0, 0);
+
+  const ratio = out.width / cssWidth();
+  o.save();
+  o.globalAlpha = .92;
+  o.fillStyle = '#f8f0df';
+  o.fillRect(0, out.height - 70 * ratio, out.width, 70 * ratio);
+  o.globalAlpha = 1;
+  o.fillStyle = '#2e2925';
+  o.font = `bold ${22 * ratio}px sans-serif`;
+  const title = document.getElementById('workTitle').value || '北海道五十三次';
+  o.fillText(title, 18 * ratio, out.height - 38 * ratio);
+  o.font = `${14 * ratio}px sans-serif`;
+  const author = document.getElementById('author').value || '';
+  o.fillText(author, 18 * ratio, out.height - 14 * ratio);
+  o.restore();
+
+  const a = document.createElement('a');
+  const safe = title.replace(/[\\/:*?"<>|]/g, '_');
+  a.href = out.toDataURL('image/png');
+  a.download = safe + '.png';
+  a.click();
+};
+
+paintCanvas.addEventListener('pointerdown', beginPointer);
+paintCanvas.addEventListener('pointermove', movePointer);
+paintCanvas.addEventListener('pointerup', endPointer);
+paintCanvas.addEventListener('pointerleave', endPointer);
+paintCanvas.addEventListener('pointercancel', endPointer);
+
+window.addEventListener('resize', () => {
+  clearTimeout(window.__resizeTimer);
+  window.__resizeTimer = setTimeout(resizeCanvasesPreservingPaint, 180);
+});
+
+fitStageByPreset();
+configureCanvas(paperCanvas, pctx);
+configureCanvas(paintCanvas, ctx);
+drawPaper();
+setModeLabel('筆');
+</script>
+</body>
+</html>
